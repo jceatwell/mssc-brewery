@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.text.MessageFormat;
 import java.util.UUID;
 
@@ -25,7 +26,7 @@ public class BeerController {
     }
 
     @PostMapping()
-    public ResponseEntity handlePost(BeerDto beerDto) {
+    public ResponseEntity handlePost(@RequestBody BeerDto beerDto) {
         BeerDto saveDto = beerService.saveNewBeer(beerDto);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", MessageFormat.format("/api/v1/beer/{0}", saveDto.getId()));
@@ -33,9 +34,16 @@ public class BeerController {
     }
 
     @PutMapping({"/{beerId}"})
-    public ResponseEntity handleUpdate(@PathVariable("beerId") UUID beerId, BeerDto beerDto) {
-        beerService.saveBeer(beerId, beerDto);
+    public ResponseEntity handleUpdate(@PathVariable("beerId") UUID beerId, @RequestBody BeerDto beerDto){
+
+        beerService.updateBeer(beerId, beerDto);
+
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
+    @DeleteMapping({"/beerId"})
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteBeer(@PathVariable("beerId") UUID beerId) {
+        beerService.deleteById(beerId);
+    }
 }
